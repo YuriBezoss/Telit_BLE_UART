@@ -48,6 +48,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import static java.lang.String.format;
 
 public class MainActivity extends AppCompatActivity
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     boolean SearchBLE = false;
     boolean BLUETOOTH_ENABLE = false;
     boolean BLUETOOTH_RECONNECT = false;
+    long    counterLoops=0;
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final int REQUEST_ENABLE_BT = 1;
@@ -157,14 +161,14 @@ public class MainActivity extends AppCompatActivity
                 DiscoverGattDevice( intent.getStringExtra(BluetoothLeService.ACTION_mBluetoothDeviceName),
                                     intent.getStringExtra(BluetoothLeService.ACTION_mBluetoothDeviceAddress));
             }
-            else if (BluetoothLeService.COUNTDOWN_BR.equals(action))
-            {
-                if (checkTimeOut(intent))
-                {
-                    //mBluetoothLeService.broadcastUpdate(mBluetoothLeService.ACTION_GATT_DISCONNECTED);
-                    //mBluetoothLeService.disconnect();
-                }
-            }
+            //else if (BluetoothLeService.COUNTDOWN_BR.equals(action))
+            //{
+            //    if (checkTimeOut(intent))
+            //    {
+            //        //mBluetoothLeService.broadcastUpdate(mBluetoothLeService.ACTION_GATT_DISCONNECTED);
+            //        //mBluetoothLeService.disconnect();
+            //    }
+            //}
             else if (BluetoothLeService.ACTION_Enable.equals(action))
             {
                 progressDialog.setMessage("Connected");
@@ -337,6 +341,9 @@ public class MainActivity extends AppCompatActivity
             }
         }
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+
+        //while(!mBluetoothLeService.mBluetoothGattConnected){}
+        //bleTelitUART();
     }
 
     @Override
@@ -361,7 +368,7 @@ public class MainActivity extends AppCompatActivity
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_DEVICE_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_Enable);
         intentFilter.addAction(BluetoothLeService.ACTION_Connect_Fail);
-        intentFilter.addAction(BluetoothLeService.COUNTDOWN_BR);
+        //intentFilter.addAction(BluetoothLeService.COUNTDOWN_BR);
 
         return intentFilter;
     }
@@ -393,6 +400,29 @@ public class MainActivity extends AppCompatActivity
         {
             mLeDeviceListAdapter.addDevice(DeviceName, DeviceAddress);
             mLeDeviceListAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void bleTelitUART()
+    {
+        //if(!mBluetoothLeService.mBluetoothGattConnected)
+        //    return;
+        final long  timeInterval = 3000;
+
+        Timer   timer = new Timer(true);
+        timer.schedule(new bleSendTask(), 3000, timeInterval);
+        mDataText.setText(mDataText.getText()+ String.valueOf(counterLoops) +"\t, ");
+        mScroller.fullScroll(ScrollView.FOCUS_DOWN);
+    }
+
+    public class bleSendTask extends TimerTask
+    {
+        @Override
+        public void run()
+        {
+            mBluetoothLeService.writeCharacteristicCMD(Utils.genrateASCIIList());
+            Log.d("Timer Task", "Write ASCII to PC RS-232.");
+            counterLoops++;
         }
     }
 
@@ -437,6 +467,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /*
     private void CommandTest(byte command)
     {
         byte[] testCommand = new byte[0];
@@ -476,6 +507,7 @@ public class MainActivity extends AppCompatActivity
             Log.d(info, " data [" + i + "]= " + format("0x%02X",data[i]));
         }
     }
+    */
 
     private void displayData(String data)
     {
@@ -484,6 +516,8 @@ public class MainActivity extends AppCompatActivity
                 OpenDialog = false;
                 progressDialog.cancel();
             }
+
+        InsertMessage(data);
     }
 
     @Override

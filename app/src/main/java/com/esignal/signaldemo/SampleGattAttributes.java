@@ -11,8 +11,10 @@ public class SampleGattAttributes
     private static HashMap<String, String> attributes = new HashMap();
     //public static String HEART_RATE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
     public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
-    public static String NOTIFY_CHARACTERISTIC = "0000fff1-0000-1000-8000-00805f9b34fb";
-    public static String WTIYE_CHARACTERISTIC = "0000fff2-0000-1000-8000-00805f9b34fb";
+    public static String TELIT_DATA_RX = "00000001-0000-1000-8000-008025000000";
+    public static String TELIT_DATA_TX = "00000002-0000-1000-8000-008025000000";
+    public static String TELIT_CREDITS_RX = "00000003-0000-1000-8000-008025000000";
+    public static String TELIT_CREDITS_TX = "00000004-0000-1000-8000-008025000000";
 
     static {
         // Sample Services.

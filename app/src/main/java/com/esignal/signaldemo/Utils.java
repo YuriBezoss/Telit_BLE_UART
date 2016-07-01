@@ -106,4 +106,16 @@ public class Utils
         }
         return hex.toString();
     }
+
+    public static byte[] genrateASCIIList()
+    {
+        byte[]	tmpByte = new byte[128-32];
+
+        for(int i=0; i<tmpByte.length; i++)
+        {
+            tmpByte[i] = (byte)(0x20+i);
+        }
+
+        return tmpByte;
+    }
 }
